@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Judge</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1a5276;
+    --blue-light: #2471a3;
+    --blue-pale: #d6eaf8;
+    --red: #c0392b;
+    --green: #1e8449;
+    --orange: #d35400;
+    --purple: #7d3c98;
+    --yellow: #b7950b;
+    --gray: #717d7e;
+    --gray-light: #f2f3f4;
+    --gray-border: #ccd1d1;
+    --text: #1c2833;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'PT Sans', sans-serif;
+    background: #eaecee;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .topbar {
+    background: var(--blue);
+    color: white;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    height: 38px;
+    gap: 20px;
+    border-bottom: 3px solid #154360;
+  }
+  .topbar-logo {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: white;
+    text-decoration: none;
+  }
+  .topbar-logo span { color: #aed6f1; }
+  .topbar-nav a {
+    color: #aed6f1;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 0 8px;
+  }
+  .topbar-nav a:hover { color: white; }
+
+  .subnav {
+    background: var(--blue-light);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    gap: 2px;
+  }
+  .subnav a {
+    color: #d6eaf8;
+    text-decoration: none;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  .subnav a:hover, .subnav a.active { background: rgba(255,255,255,0.15); color: white; }
+
+  .page {
+    max-width: 1100px;
+    margin: 16px auto;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .panel {
+    background: white;
+    border: 1px solid var(--gray-border);
+    border-radius: 2px;
+  }
+  .panel-header {
+    background: var(--blue);
+    color: white;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-header.green { background: #1a5e20; }
+  .panel-header.gray { background: #515a5a; }
+  .panel-body { padding: 12px; }
+
+  #code {
+    width: 100%;
+    height: 380px;
+    font-family: 'PT Mono', monospace;
+    font-size: 13px;
+    border: 1px solid var(--gray-border);
+    padding: 10px;
+    resize: vertical;
+    outline: none;
+    color: var(--text);
+    line-height: 1.6;
+    background: #fdfefe;
+    tab-size: 4;
+  }
+  #code:focus { border-color: var(--blue-light); }
+
+  .limits-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .limit-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--gray);
+  }
+  .limit-group input {
+    width: 64px;
+    border: 1px solid var(--gray-border);
+    padding: 4px 6px;
+    font-family: 'PT Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    border-radius: 2px;
+  }
+  .limit-group input:focus { border-color: var(--blue-light); }
+
+  .bottom-row {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .submit-btn {
+    padding: 8px 24px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s;
+  }
+  .submit-btn:hover { background: var(--blue-light); }
+  .submit-btn:disabled { background: var(--gray); cursor: not-allowed; }
+
+  .upload-btn-label {
+    display: inline-block;
+    padding: 7px 14px;
+    background: var(--gray-light);
+    border: 1px solid var(--gray-border);
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 2px;
+    color: var(--text);
+  }
+  .upload-btn-label:hover { background: var(--blue-pale); border-color: var(--blue-light); }
+  input[type=file] { display: none; }
+
+  .test-case {
+    border: 1px solid var(--gray-border);
+    border-radius: 2px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .test-case-header {
+    background: var(--gray-light);
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .remove-tc {
+    background: none;
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 0;
+  }
+  .tc-body { padding: 8px; }
+  .tc-label {
+    font-size: 11px;
+    color: var(--gray);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+  }
+  .tc-body textarea {
+    width: 100%;
+    height: 52px;
+    font-family: 'PT Mono', monospace;
+    font-size: 12px;
+    border: 1px solid var(--gray-border);
+    padding: 5px;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 6px;
+    background: #fdfefe;
+  }
+  .tc-body textarea:focus { border-color: var(--blue-light); }
+  .tc-body textarea:last-child { margin-bottom: 0; }
+
+  .add-tc-btn {
+    width: 100%;
+    padding: 7px;
+    background: white;
+    border: 1px dashed var(--gray-border);
+    color: var(--blue-light);
+    font-family: 'PT Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  .add-tc-btn:hover { background: var(--blue-pale); border-color: var(--blue-light); }
+
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .results-table th {
+    background: var(--gray-light);
+    border: 1px solid var(--gray-border);
+    padding: 5px 10px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text);
+    font-size: 12px;
+  }
+  .results-table td {
+    border: 1px solid var(--gray-border);
+    padding: 6px 10px;
+    vertical-align: top;
+  }
+  .results-table tr:hover td { background: #f8f9fa; }
+
+  .verdict {
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .verdict.AC  { background: #d5f5e3; color: var(--green);  border: 1px solid #a9dfbf; }
+  .verdict.WA  { background: #fadbd8; color: var(--red);    border: 1px solid #f1948a; }
+  .verdict.TLE { background: #d6eaf8; color: var(--blue);   border: 1px solid #85c1e9; }
+  .verdict.MLE { background: #fdebd0; color: var(--orange); border: 1px solid #f0b27a; }
+  .verdict.RE  { background: #e8daef; color: var(--purple); border: 1px solid #c39bd3; }
+  .verdict.CE  { background: #fef9e7; color: var(--yellow); border: 1px solid #f7dc6f; }
+
+  .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+  .diff-box { background: var(--gray-light); border: 1px solid var(--gray-border); border-radius: 2px; padding: 6px 8px; }
+  .diff-box .diff-label { font-size: 10px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .diff-box pre { font-family: 'PT Mono', monospace; font-size: 11px; white-space: pre-wrap; word-break: break-all; color: var(--text); }
+
+  .ce-box {
+    background: #fef9e7;
+    border-left: 3px solid #f7dc6f;
+    padding: 12px;
+    font-family: 'PT Mono', monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    color: #7d6608;
+    margin: 0;
+  }
+
+  .summary-row {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--gray-border);
+    color: var(--gray);
+    background: var(--gray-light);
+  }
+  .summary-row strong { color: var(--text); }
+
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .time-cell { color: var(--gray); font-family: 'PT Mono', monospace; font-size: 12px; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="#">Judge<span>Zero</span></a>
+  <div class="topbar-nav">
+    <a href="#">Problems</a>
+    <a href="#">Standings</a>
+    <a href="#">Submissions</a>
+  </div>
+</div>
+<div class="subnav">
+  <a href="#" class="active">Submit</a>
+  <a href="#">My Submissions</a>
+</div>
+
+<div class="page">
+
+  <!-- LEFT -->
+  <div>
+    <div class="panel" style="margin-bottom:14px;">
+      <div class="panel-header">✦ Submit Solution</div>
+      <div class="panel-body">
+        <textarea id="code" spellcheck="false" placeholder="#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    // your solution
+    return 0;
+}"></textarea>
+
+        <div class="limits-row">
+          <div class="limit-group">
+            ⏱ Time limit:
+            <input type="number" id="timeLimit" value="2" min="1" max="10">
+            s
+          </div>
+          <div class="limit-group">
+            💾 Memory limit:
+            <input type="number" id="memLimit" value="256" min="16" max="1024" step="16">
+            MB
+          </div>
+        </div>
+
+        <div class="bottom-row">
+          <button class="submit-btn" id="judgeBtn" onclick="judge()">▶ Submit</button>
+          <label class="upload-btn-label" for="cppFile">📁 Upload .cpp</label>
+          <input type="file" id="cppFile" accept=".cpp,.cc,.cxx">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="resultsPanel" style="display:none;">
+      <div class="panel-header green">⚡ Judge Results</div>
+      <div id="results"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: test cases -->
+  <div>
+    <div class="panel">
+      <div class="panel-header gray">🧪 Test Cases</div>
+      <div class="panel-body">
+        <div id="testCaseList"></div>
+        <button class="add-tc-btn" onclick="addTestCase()">+ Add test case</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let tcCount = 0;
+
+function addTestCase(inputVal = '', outputVal = '') {
+  tcCount++;
+  const id = tcCount;
+  const div = document.createElement('div');
+  div.className = 'test-case';
+  div.id = `tc-${id}`;
+  div.innerHTML = `
+    <div class="test-case-header">
+      Test #${id}
+      <button class="remove-tc" onclick="document.getElementById('tc-${id}').remove()" title="Remove">×</button>
+    </div>
+    <div class="tc-body">
+      <div class="tc-label">Input</div>
+      <textarea id="input-${id}" placeholder="stdin..."></textarea>
+      <div class="tc-label">Expected Output</div>
+      <textarea id="output-${id}" placeholder="expected stdout..."></textarea>
+    </div>
+  `;
+  document.getElementById('testCaseList').appendChild(div);
+  if (inputVal) document.getElementById(`input-${id}`).value = inputVal;
+  if (outputVal) document.getElementById(`output-${id}`).value = outputVal;
+}
+
+document.getElementById('cppFile').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { document.getElementById('code').value = ev.target.result; };
+  reader.readAsText(file);
+});
+
+document.getElementById('code').addEventListener('keydown', function(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = this.selectionStart;
+    this.value = this.value.slice(0, s) + '    ' + this.value.slice(this.selectionEnd);
+    this.selectionStart = this.selectionEnd = s + 4;
+  }
+});
+
+async function judge() {
+  const code = document.getElementById('code').value.trim();
+  if (!code) return alert('Paste your C++ code first.');
+
+  const timeLimit = parseInt(document.getElementById('timeLimit').value) || 2;
+  const memLimit  = parseInt(document.getElementById('memLimit').value)  || 256;
+
+  const testCases = [];
+  document.querySelectorAll('.test-case').forEach(tc => {
+    const id = tc.id.replace('tc-', '');
+    testCases.push({
+      input:  document.getElementById(`input-${id}`).value,
+      output: document.getElementById(`output-${id}`).value
+    });
+  });
+
+  if (!testCases.length) return alert('Add at least one test case.');
+
+  const btn = document.getElementById('judgeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Judging...';
+
+  const panel      = document.getElementById('resultsPanel');
+  const resultsDiv = document.getElementById('results');
+  panel.style.display = 'none';
+  resultsDiv.innerHTML = '';
+
+  try {
+    const resp = await fetch('http://localhost:3000/judge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, testCases, timeLimit, memLimit })
+    });
+
+    const data = await resp.json();
+    panel.style.display = 'block';
+
+    if (data.error === 'CE') {
+      resultsDiv.innerHTML = `
+        <div class="summary-row"><span class="verdict CE">Compilation Error</span></div>
+        <div class="ce-box">${esc(data.message)}</div>`;
+      return;
+    }
+
+    const results = data.results;
+    if (!results) {
+      resultsDiv.innerHTML = `<div class="ce-box">Server returned an unexpected response.</div>`;
+      return;
+    }
+    const passed = results.filter(r => r.status === 'AC').length;
+    const allAC   = passed === results.length;
+
+    const desc = {
+      AC:  'Accepted',
+      WA:  'Wrong Answer',
+      TLE: 'Time Limit Exceeded',
+      MLE: 'Memory Limit Exceeded',
+      RE:  'Runtime Error'
+    };
+
+    const rows = results.map(r => {
+      let extra = '';
+      if (r.status === 'WA') {
+        extra = `<div class="diff-grid">
+          <div class="diff-box"><div class="diff-label">Your Output</div><pre>${esc(r.stdout || '(empty)')}</pre></div>
+          <div class="diff-box"><div class="diff-label">Expected</div><pre>${esc(r.expected || '(empty)')}</pre></div>
+        </div>`;
+      }
+      if (r.status === 'RE' && r.stderr) {
+        extra = `<div class="diff-box" style="margin-top:6px;"><div class="diff-label">Stderr</div><pre style="color:#7d3c98;">${esc(r.stderr)}</pre></div>`;
+      }
+      return `<tr>
+        <td style="text-align:center;font-family:'PT Mono',monospace;font-size:12px;width:40px;">${r.index}</td>
+        <td><span class="verdict ${r.status}">${r.status}</span> <span style="color:#717d7e;font-size:12px;">${desc[r.status] || ''}</span>${extra}</td>
+        <td class="time-cell" style="width:70px;">${r.elapsed != null ? r.elapsed + 'ms' : '—'}</td>
+      </tr>`;
+    }).join('');
+
+    resultsDiv.innerHTML = `
+      <div class="summary-row">
+        Result: <strong>${passed}/${results.length}</strong> passed
+        ${allAC ? ' &nbsp;🎉 <strong style="color:var(--green)">All Accepted!</strong>' : ''}
+      </div>
+      <table class="results-table">
+        <thead><tr><th>#</th><th>Verdict</th><th>Time</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+
+  } catch (e) {
+    panel.style.display = 'block';
+    resultsDiv.innerHTML = `<div class="ce-box">Could not connect to judge server.\nMake sure node server.js is running on port 3000.\n\n${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '▶ Submit';
+  }
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+addTestCase();
+addTestCase();
+</script>
+</body>
+</html>
